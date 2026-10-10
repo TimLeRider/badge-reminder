@@ -1,0 +1,32 @@
+{
+  "name": "badge-reminder",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Badge Reminder : compte à rebours personnel de badgeage.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "reminders": "node scripts/send-reminders.mjs",
+    "reminders:dry": "node scripts/send-reminders.mjs --dry-run"
+  },
+  "engines": {
+    "node": ">=18.18"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/public-sans": "^5.3.0",
+    "firebase": "^13.0.0",
+    "firebase-admin": "^14.5.0",
+    "lucide-react": "^1.55.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3"
+  }
+}

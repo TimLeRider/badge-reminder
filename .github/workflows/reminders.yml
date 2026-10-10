@@ -1,0 +1,38 @@
+name: Rappels de badgeage
+
+# Planificateur des notifications push. GitHub peut retarder les exécutions « cron »
+# de plusieurs minutes : les rappels arrivent « vers » l'heure choisie, pas à la minute près.
+# Dépôt PUBLIC : minutes Actions gratuites et illimitées. Dépôt privé : passez à '5 * * * *' (toutes les heures).
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Simulation (n’envoie rien, n’écrit rien)'
+        type: boolean
+        default: false
+
+# Aucun déclencheur « pull_request » : les secrets ne sont jamais exposés à du code externe.
+permissions:
+  contents: read
+
+concurrency:
+  group: reminders
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Envoyer les rappels dus
+        run: node scripts/send-reminders.mjs ${{ inputs.dry_run && '--dry-run' || '' }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

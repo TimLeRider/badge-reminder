@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    function validNotif(n) {
+      return n is map
+        && n.keys().hasOnly(['enabled', 'hour', 'minute', 'days'])
+        && n.enabled is bool
+        && n.hour is int && n.hour >= 0 && n.hour <= 23
+        && n.minute is int && n.minute >= 0 && n.minute <= 59
+        && n.days is list && n.days.size() <= 7;
+    }
+
+    function validUser(d) {
+      return d.pseudo is string && d.pseudo.size() >= 2 && d.pseudo.size() <= 30
+        && d.timezone is string && d.timezone.size() <= 64
+        && d.theme in ['light', 'dark', 'system']
+        && d.defaultDelay is int && d.defaultDelay >= 1 && d.defaultDelay <= 365
+        && validNotif(d.notifications);
+    }
+
+    // Demande de test push : le client ne peut que passer à "pending",
+    // et seulement s'il n'y en a pas déjà une en attente (anti-spam).
+    function validTestRequest(t, old) {
+      return t.keys().hasOnly(['status', 'requestedAt'])
+        && t.status == 'pending'
+        && t.requestedAt == request.time
+        && (!('testRequest' in old) || old.testRequest.status != 'pending');
+    }
+
+    function validBadge(d) {
+      return d.name is string && d.name.size() >= 1 && d.name.size() <= 60
+        && d.lastBadgeDate is string && d.lastBadgeDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && d.delayDays is int && d.delayDays >= 1 && d.delayDays <= 365
+        && d.cycle is int && d.cycle >= 1
+        && d.reminders is map
+        && d.reminders.keys().hasOnly(['42', '28', '21', '14', '7', '3', '2', '1', '0'])
+        && d.updatedAt == request.time;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['pseudo', 'timezone', 'theme', 'defaultDelay', 'notifications', 'createdAt'])
+        && validUser(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if isOwner(uid)
+        && validUser(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['pseudo', 'timezone', 'theme', 'defaultDelay', 'notifications', 'testRequest'])
+        && (!('testRequest' in request.resource.data.diff(resource.data).affectedKeys())
+            || validTestRequest(request.resource.data.testRequest, resource.data));
+
+      allow delete: if isOwner(uid);
+
+      match /badges/{badgeId} {
+        allow read: if isOwner(uid);
+
+        allow create: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['name', 'lastBadgeDate', 'delayDays', 'cycle', 'reminders', 'createdAt', 'updatedAt'])
+          && validBadge(request.resource.data)
+          && request.resource.data.cycle == 1
+          && request.resource.data.createdAt == request.time;
+
+        allow update: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['name', 'lastBadgeDate', 'delayDays', 'cycle', 'reminders', 'createdAt', 'updatedAt'])
+          && validBadge(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (request.resource.data.cycle == resource.data.cycle
+              || request.resource.data.cycle == resource.data.cycle + 1);
+
+        allow delete: if isOwner(uid);
+
+        // Historique : écrit uniquement par le planificateur (Admin SDK, hors règles).
+        match /reminders/{reminderId} {
+          allow read: if isOwner(uid);
+          allow delete: if isOwner(uid);   // nécessaire à la suppression du compte
+          allow create, update: if false;
+        }
+      }
+
+      match /notificationTokens/{tokenId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['token', 'ua', 'updatedAt'])
+          && request.resource.data.token is string
+          && request.resource.data.token.size() < 4096
+          && request.resource.data.ua is string
+          && request.resource.data.ua.size() <= 300
+          && request.resource.data.updatedAt == request.time;
+      }
+    }
+
+    // Tout le reste est refusé.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
