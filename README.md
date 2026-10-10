@@ -1,11 +1,16 @@
+<div align="center">
+
 # Badge Reminder
 
-Compte à rebours **personnel et indépendant** avant votre prochain badgeage : comptes utilisateurs,
-badges multiples, couleurs dynamiques, rappels personnalisables et **notifications Web Push réelles**
-(même site fermé). Hébergé gratuitement sur GitHub Pages. **Aucune connexion à un système externe** : le calcul
-repose uniquement sur les dates et délais que vous saisissez.
+<img width="200" height="200" alt="icon-512" src="https://github.com/user-attachments/assets/093c6f2e-5d1d-4a6c-8cb7-587ee6f40db6" />
 
-Adresse cible : `https://timlerider.github.io/badge-reminder/`
+</div>
+
+---
+
+Compte à rebours **personnel et indépendant** avant votre prochain badgeage : comptes utilisateurs, badges multiples, couleurs dynamiques, rappels personnalisables et **notifications Web Push réelles** (même site fermé). Hébergé gratuitement sur GitHub Pages. **Aucune connexion à un système externe** : le calcul repose uniquement sur les dates et délais que vous saisissez.
+
+**Adresse cible :** `https://timlerider.github.io/badge-reminder/`
 
 ## 1. Architecture (budget : 0 €)
 
