@@ -3,8 +3,10 @@
 // GitHub FIREBASE_SERVICE_ACCOUNT. Cette clé n'est JAMAIS envoyée au navigateur.
 //
 // Usage : node scripts/send-reminders.mjs [--dry-run]
-import admin from 'firebase-admin';
-import { localParts, safeTimeZone } from '../src/lib/dates.js';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
+import { safeTimeZone } from '../src/lib/dates.js';
 import { dueThresholds, isNotifyTime, reminderDocId, reminderText } from '../src/lib/reminders.js';
 
 const DRY = process.argv.includes('--dry-run');
@@ -21,10 +23,9 @@ try {
   process.exit(1);
 }
 
-admin.initializeApp({ credential: admin.credential.cert(credentials) });
-const db = admin.firestore();
-const messaging = admin.messaging();
-const { FieldValue } = admin.firestore;
+initializeApp({ credential: cert(credentials) });
+const db = getFirestore();
+const messaging = getMessaging();
 
 const INVALID_TOKEN_CODES = new Set([
   'messaging/registration-token-not-registered',
