@@ -109,12 +109,12 @@ input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
 .ring svg { width: 100%; height: 100%; }
 .ring-track { fill: none; stroke: var(--surface-2); stroke-width: 18; }
 .ring-bar { fill: none; stroke: var(--lvl); stroke-width: 18; stroke-linecap: round; transition: stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1), stroke .5s; }
-.ring-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 2px; padding: 0 16%; }
-.ring-center .pre { color: var(--muted); font-weight: 600; }
-.ring-center .big { font-family: var(--font-display); font-weight: 800; font-size: clamp(4.5rem, 20vw, 6.5rem); line-height: .95; color: var(--lvl); transition: color .5s; font-variation-settings: 'wdth' 90; }
-.ring-center .big.small-big { font-size: clamp(2rem, 9vw, 2.8rem); }
-.ring-center .unit { font-family: var(--font-display); font-weight: 800; letter-spacing: .06em; color: var(--lvl); font-size: 1.3rem; }
-.ring-center .post { color: var(--muted); font-size: .92rem; margin-top: 6px; }
+.ring-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 0; padding: 0 20%; }
+.ring-center .pre { color: var(--muted); font-weight: 600; font-size: .85rem; line-height: 1.2; }
+.ring-center .big { font-family: var(--font-display); font-weight: 800; font-size: clamp(3.2rem, 14vw, 4.6rem); line-height: 1; color: var(--lvl); transition: color .5s; font-variation-settings: 'wdth' 90; }
+.ring-center .big.small-big { font-size: clamp(1.4rem, 6.5vw, 1.8rem); }
+.ring-center .unit { font-family: var(--font-display); font-weight: 800; letter-spacing: .06em; color: var(--lvl); font-size: 1.05rem; line-height: 1.2; }
+.ring-center .post { color: var(--muted); font-size: .78rem; line-height: 1.25; margin-top: 4px; text-wrap: balance; }
 .level-chip { display: inline-flex; gap: 8px; align-items: center; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--lvl); color: var(--lvl); background: color-mix(in srgb, var(--lvl) 10%, var(--surface)); font-size: .95rem; transition: all .5s; }
 .level-chip span { color: var(--muted); }
 .actions { display: grid; gap: 10px; justify-items: center; width: min(420px, 100%); }
